@@ -5,6 +5,8 @@
   * update - PUT para atualizar um registro.
   * delete - DELETE para tem over um registro.
   */
+const  { hash } = require("bcryptjs");
+
 const AppError = require("../utils/AppError");
 const sqliteConnection = require("../database/sqlite")
 
@@ -21,9 +23,8 @@ class UsersController {
     const checkUserExists = 
       await database.get(
         `
-          select * from
-          users
-          where email = (?)
+          select * from users
+           where email = (?)
         `, 
         [email]
       );
@@ -31,6 +32,17 @@ class UsersController {
     if (checkUserExists) {
       throw new AppError("Este e-mail já está em uso.")
     }
+
+    const hashedPassword = await hash(password, 8);
+
+    await database.run(
+      `
+        insert into users
+        (name, email, password)
+        values
+        (?, ?, ?)
+      `,
+      [ name, email, hashedPassword ]);
 
     return response.status(201).json();
   }
