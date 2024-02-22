@@ -1,2 +1,2 @@
 # rocketnotes
-Trilha Explorer | Stage 8 - Rocketnotes | Rocketseat
+Trilha Explorer | Stage 8 - Rocketnotes API | Rocketseat
