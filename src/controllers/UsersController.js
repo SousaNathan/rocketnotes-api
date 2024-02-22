@@ -6,24 +6,33 @@
   * delete - DELETE para tem over um registro.
   */
 const AppError = require("../utils/AppError");
+const sqliteConnection = require("../database/sqlite")
 
 class UsersController {
-  create(request, response) {
+  async create(request, response) {
+    const database = await sqliteConnection();
+
     const {
       name, 
       email, 
       password 
     } = request.body;
 
-    if (!name) {
-      throw new AppError("Nome é obrigatório");
+    const checkUserExists = 
+      await database.get(
+        `
+          select * from
+          users
+          where email = (?)
+        `, 
+        [email]
+      );
+
+    if (checkUserExists) {
+      throw new AppError("Este e-mail já está em uso.")
     }
-  
-    response.status(201).json({
-      name, 
-      email, 
-      password
-    });
+
+    return response.status(201).json();
   }
 }
 
